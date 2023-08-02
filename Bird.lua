@@ -34,3 +34,25 @@ function Bird:collides(pipe)
     end
     return false
 end
+
+function Bird:collidesWithGround()
+    if (self.y + 2) + (self.height - 4) >= (VIRTUAL_HEIGHT - ground:getHeight() + 2) then
+        return true
+    else
+        return false
+    end
+end
+
+function Bird:collidesWithSky()
+    if (self.y + 2) + (self.height - 4) <= -32 then
+        return true
+    else
+        return false
+    end
+end
+
+function Bird:reset()
+    self.x = VIRTUAL_WIDTH / 2 - (self.width / 2)
+    self.y = VIRTUAL_HEIGHT / 2 - (self.height / 2)
+    self.dy = 0;
+end
