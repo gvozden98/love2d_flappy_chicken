@@ -1,9 +1,9 @@
 _G.love = require("love")
-local push = require 'push'
-require 'class'
-require 'Bird'
-require 'Pipe'
-require 'PipePair'
+local push = require 'classes/push'
+require 'classes/class'
+require 'classes/Bird'
+require 'classes/Pipe'
+require 'classes/PipePair'
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 512
 
@@ -17,8 +17,8 @@ local background_looping_point = 767 - 512
 local backgroundSpeed = 100
 local backgroundScroll = 0
 
-local background = love.graphics.newImage('Background1-export.png')
-_G.ground = love.graphics.newImage('plain-background.png')
+local background = love.graphics.newImage('sprites/Background1-export.png')
+_G.ground = love.graphics.newImage('sprites/plain-background.png')
 
 local bird = Bird()
 local pipePairs = {}
@@ -38,10 +38,10 @@ function love.load()
         fullscreen = false,
         resizable = true
     })
-    _G.titlefont = love.graphics.newFont('font.ttf', 32)
-    _G.pressKeyFont = love.graphics.newFont('font.ttf', 16)
-    _G.scoreFont = love.graphics.newFont('font.ttf', 12)
-    _G.fpsFont = love.graphics.newFont("font.ttf", 6)
+    _G.titlefont = love.graphics.newFont('fonts/font.ttf', 32)
+    _G.pressKeyFont = love.graphics.newFont('fonts/font.ttf', 16)
+    _G.scoreFont = love.graphics.newFont('fonts/font.ttf', 12)
+    _G.fpsFont = love.graphics.newFont("fonts/font.ttf", 6)
     _G.sounds = {
         ['jump'] = love.audio.newSource('sounds/birdjump.wav', 'static'),
         ['wall_hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static'),

@@ -1,6 +1,6 @@
 Pipe = class {}
 
-local PIPE_IMAGE = love.graphics.newImage('newPipe.png')
+local PIPE_IMAGE = love.graphics.newImage('sprites/newPipe.png')
 
 local PIPE_SCROLL = -60
 -- speed at which the pipe should scroll right to left
