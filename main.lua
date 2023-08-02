@@ -4,6 +4,7 @@ require 'class'
 require 'Bird'
 require 'Pipe'
 require 'PipePair'
+require 'StateMachine'
 WINDOW_WIDTH = 1024
 WINDOW_HEIGHT = 512
 
@@ -24,6 +25,9 @@ local bird = Bird()
 local pipePairs = {}
 local pipeTimer = 0
 
+local scrolling = true
+_G.score = 0
+
 --initilize our last recorded Y value for a gap placement to
 local lastY = -PIPE_HEIGHT + math.random(80) + 20
 function love.load()
@@ -41,32 +45,42 @@ function love.load()
 end
 
 function love.update(dt)
-    backgroundScroll = (backgroundScroll + backgroundSpeed * dt) % background_looping_point
-    groundScroll = (groundScroll + groundSpeed * dt) % (ground:getWidth() - VIRTUAL_WIDTH)
+    if scrolling then
+        backgroundScroll = (backgroundScroll + backgroundSpeed * dt) % background_looping_point
+        groundScroll = (groundScroll + groundSpeed * dt) % (ground:getWidth() - VIRTUAL_WIDTH)
 
-    --gravity
-    pipeTimer = pipeTimer + dt
+        --gravity
+        pipeTimer = pipeTimer + dt
 
-    if pipeTimer > 2 then
-        --this is how to add to the table,
-        local y = math.max(-PIPE_HEIGHT + 10, math.min(lastY + math.random(-20, 20), VIRTUAL_HEIGHT - 90 - PIPE_HEIGHT))
-        lastY = y
-        table.insert(pipePairs, PipePair(y))
-        pipeTimer = 0
-    end
-
-    bird:update(dt)
-
-    for k, pair in ipairs(pipePairs) do
-        pair:update(dt)
-    end
-
-    for k, pair in pairs(pipePairs) do
-        if pair.remove then
-            table.remove(pipePairs, k)
+        if pipeTimer > 2 then
+            --this is how to add to the table,
+            local y = math.max(-PIPE_HEIGHT + 10,
+                math.min(lastY + math.random(-20, 20), VIRTUAL_HEIGHT - 90 - PIPE_HEIGHT))
+            lastY = y
+            table.insert(pipePairs, PipePair(y))
+            pipeTimer = 0
         end
+
+        bird:update(dt)
+
+        for k, pair in pairs(pipePairs) do
+            pair:update(dt)
+
+            -- check to see if bird collided with pipe
+            for l, pipe in pairs(pair.pipes) do
+                if bird:collides(pipe) then
+                    -- pause the game to show collision
+                    scrolling = false
+                end
+            end
+
+            -- if pipe is no longer visible past left edge, remove it from scene
+            if pair.x < -PIPE_WIDTH then
+                pair.remove = true
+            end
+        end
+        love.keyboard.keysPressed = {}
     end
-    love.keyboard.keysPressed = {}
 end
 
 function love.draw()
@@ -74,7 +88,7 @@ function love.draw()
 
     love.graphics.draw(background, -backgroundScroll, 0)
 
-    for index, pair in ipairs(pipePairs) do
+    for index, pair in pairs(pipePairs) do
         pair:render()
     end
 
