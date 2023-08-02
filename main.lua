@@ -42,6 +42,13 @@ function love.load()
     _G.pressKeyFont = love.graphics.newFont('font.ttf', 16)
     _G.scoreFont = love.graphics.newFont('font.ttf', 12)
     _G.fpsFont = love.graphics.newFont("font.ttf", 6)
+    _G.sounds = {
+        ['jump'] = love.audio.newSource('sounds/birdjump.wav', 'static'),
+        ['wall_hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static'),
+        ['pass_pillar'] = love.audio.newSource('sounds/pass_pillar.wav', 'static'),
+        ['ground_hit'] = love.audio.newSource('sounds/ground_hit.wav', 'static'),
+        ['sky_hit'] = love.audio.newSource('sounds/sky_hit.wav', 'static')
+    }
     --setting loves keypressed table to an empty table
     _G.state = 'title'
     love.keyboard.keysPressed = {}
@@ -72,6 +79,7 @@ function love.update(dt)
                 if pair.x + PIPE_WIDTH < bird.x then
                     _G.score = score + 1
                     pair.scored = true
+                    sounds["pass_pillar"]:play()
                 end
             end
 
@@ -79,6 +87,7 @@ function love.update(dt)
             for l, pipe in pairs(pair.pipes) do
                 if bird:collides(pipe) then
                     _G.state = 'end'
+                    sounds["wall_hit"]:play()
                 end
             end
 
@@ -87,8 +96,14 @@ function love.update(dt)
                 pair.remove = true
             end
         end
-        if bird:collidesWithGround() or bird:collidesWithSky() then
+        if bird:collidesWithGround() then
             _G.state = 'end'
+            sounds['ground_hit']:play()
+        end
+        if bird:collidesWithSky() then
+            _G.state = 'end'
+            sounds['sky_hit']:setVolume(0.5)
+            sounds['sky_hit']:play()
         end
 
         love.keyboard.keysPressed = {}
